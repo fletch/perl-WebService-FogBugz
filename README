@@ -1,32 +1,86 @@
-WebService-FogBugz version 0.0.1
+NAME
+    WebService::FogBugz - Perl interface to the FogBugz API
 
-INSTALLATION
+SYNOPSIS
+        use WebService::FogBugz;
 
-To install this module, run the following commands:
+        my $fogbugz = WebService::FogBugz->new({
+            email    => 'yourmail@example.com',
+            password => 'yourpassword',
+            base_url => 'http://yourfogbugz.example.com/api.asp',
+        });
 
-    perl Makefile.PL
-    make
-    make test
-    make install
+        $fogbugz->logon;
 
+        # your request.
+        my $xml = $fogbugz->request_method('search', {
+            q => 'WebService',
+        });
 
-Alternatively, to install with Module::Build, you can use the following commands:
+        $fogbugz->logoff;
 
-    perl Build.PL
-    ./Build
-    ./Build test
-    ./Build install
+DESCRIPTION
+    This module provides you Perl interface for FogBugz API. FogBugz is a
+    project management system.
 
+METHODS
+  new([%options])
+this method returns an instance of this module.
+and this method allows following arguments;
+- email (almost your email address for log in to FogBugz)
+- password
+- base_url (your fogbugz api's URL.Probably http://www.example.com/fogbugz/api.asp. For example, if the URL is http://www.example.com/fogbugz, hit http://www.example.com/fogbugz/api.xml.And see the url field of response xml.)
+  logon
+Retrieves an API token from Fogbugz.
+  logoff
+Log off from FogBugz.
+  request_method
+the 1st argument is name of command.
+FogBugz 6.0 supports many commands. You will find from FogBugz Online Documantation by using keyword of 'cmd'.
+    the 2nd argument is parameters of command of 1st argument.
 
+BUGS
+    Please report any bugs or feature requests to
+    "bug-webservice-fogbugz@rt.cpan.org", or through the web interface at
+    <http://rt.cpan.org>.
 
-DEPENDENCIES
+SUPPORT
+    You can find documentation for this module with the perldoc command.
 
-None.
+        perldoc WebService::FogBugz
 
+    You can also look for information at:
 
-COPYRIGHT AND LICENCE
+    *   FogBugz Online Documentation - API
 
-Copyright (C) 2007, Takatsugu Shigeta
+        <http://www.fogcreek.com/FogBugz/docs/60/topics/advanced/API.html>
 
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
+    *   AnnoCPAN: Annotated CPAN documentation
+
+        <http://annocpan.org/dist/WebService-FogBugz>
+
+    *   CPAN Ratings
+
+        <http://cpanratings.perl.org/d/WebService-FogBugz>
+
+    *   RT: CPAN's request tracker
+
+        <http://rt.cpan.org/NoAuth/Bugs.html?Dist=WebService-FogBugz>
+
+    *   Search CPAN
+
+        <http://search.cpan.org/dist/WebService-FogBugz>
+
+SEE ALSO
+    <http://www.fogcreek.com/FogBugz/docs/60/topics/advanced/API.html>
+
+AUTHOR
+    Takatsugu Shigeta "<shigeta@cpan.org>"
+
+LICENCE AND COPYRIGHT
+    Copyright (c) 2007, Takatsugu Shigeta "<shigeta@cpan.org>". All rights
+    reserved.
+
+    This module is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself. See perlartistic.
+
