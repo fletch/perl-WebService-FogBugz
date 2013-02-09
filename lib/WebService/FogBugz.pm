@@ -2,12 +2,12 @@ package WebService::FogBugz;
 
 use warnings;
 use strict;
-
+use 5.008_001;
 use LWP::UserAgent;
 use XML::Liberal;
 use XML::LibXML;
 
-our $VERSION = '0.0.4';
+our $VERSION = '0.0.5';
 
 sub new {
     my $class = shift;
@@ -170,11 +170,11 @@ L<http://www.fogcreek.com/FogBugz/docs/60/topics/advanced/API.html>
 
 =head1 AUTHOR
 
-Takatsugu Shigeta  C<< <takatsugu.shigeta@gmail.com> >>
+Takatsugu Shigeta  C<< <shigeta@cpan.org> >>
 
 =head1 LICENCE AND COPYRIGHT
 
-Copyright (c) 2007, Takatsugu Shigeta C<< <takatsugu.shigeta@gmail.com> >>. All rights reserved.
+Copyright (c) 2007, Takatsugu Shigeta C<< <shigeta@cpan.org> >>. All rights reserved.
 
 This module is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself. See L<perlartistic>.
