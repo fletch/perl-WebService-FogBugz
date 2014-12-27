@@ -204,7 +204,7 @@ Current Maintainer: Barbie  C<< <barbie@cpan.org> >>
 =head1 LICENCE AND COPYRIGHT
 
   Copyright (c) 2007-2014, Takatsugu Shigeta C<< <shigeta@cpan.org> >>.
-  Copyright (c) 2014-2015, Barbie C<< <babrie@cpan.org> >>. 
+  Copyright (c) 2014-2015, Barbie for Miss Barbell Productions. 
   All rights reserved.
 
 This distribution is free software; you can redistribute it and/or
