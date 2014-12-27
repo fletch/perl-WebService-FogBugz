@@ -1,6 +1,7 @@
 Revision history for WebService-FogBugz
 
         - New Maintainer: Barbie.
+        - aded META files as permanent files.
 
 0.05   Sat Feb  9 11:47:46 JST 2013
        - Start using git, Module::Install, 
