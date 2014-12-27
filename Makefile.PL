@@ -1,16 +1,26 @@
-use inc::Module::Install;
-name 'WebService-FogBugz';
-all_from 'lib/WebService/FogBugz.pm';
+#!/usr/bin/perl
 
-requires 'XML::Liberal' => 0.16;
-requires 'XML::LibXML'  => 1.60;
+use strict;
+use warnings;
+use 5.006;
 
-tests 't/*.t';
-author_tests 'xt';
+use ExtUtils::MakeMaker;
 
-test_requires 'Test::More';
-test_requires 'Test::Perl::Critic';
-test_requires 'Test::Pod::Coverage';
-test_requires 'Test::Pod';
+WriteMakefile(
+    AUTHOR              => 'Barbie <barbie@cpan.org>',
+    NAME                => 'WebService::FogBugz',
+    VERSION_FROM        => 'lib/WebService/FogBugz.pm',
+    ABSTRACT            => 'FogBugz API for Perl',
+    NO_META             => 1,
+    PREREQ_PM           => {
 
-WriteAll;
+        # prereqs
+        'XML::Liberal'          => '0.16',
+        'XML::LibXML'           => '1.60',
+
+        # build/test prereqs
+        'IO::File'              => '0',
+        'Test::More'            => '0.70'
+
+    }
+);
