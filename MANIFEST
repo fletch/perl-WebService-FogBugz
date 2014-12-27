@@ -12,6 +12,9 @@ t/01.new.t
 t/02.login.t
 t/03.logoff.t
 t/04.response.t
-t/perlcritic.t
-t/pod-coverage.t
-t/pod.t
+t/90.pod.t
+t/91.pod-coverage.t
+t/92.perlcritic.t
+t/94.metatest.t
+t/95.changedate.t
+t/96.metatest.t
