@@ -168,13 +168,16 @@ L<http://search.cpan.org/dist/WebService-FogBugz>
 
 L<http://www.fogcreek.com/FogBugz/docs/60/topics/advanced/API.html>
 
-=head1 AUTHOR
+=head1 AUTHORS
 
-Takatsugu Shigeta  C<< <shigeta@cpan.org> >>
+Original Author: Takatsugu Shigeta  C<< <shigeta@cpan.org> >>
+
+Current Maintainer: Barbie  C<< <barbie@cpan.org> >>
 
 =head1 LICENCE AND COPYRIGHT
 
-Copyright (c) 2007, Takatsugu Shigeta C<< <shigeta@cpan.org> >>. All rights reserved.
+Copyright (c) 2007-2014, Takatsugu Shigeta C<< <shigeta@cpan.org> >>. All rights reserved.
+Copyright (c) 2014-2015, Barbie C<< <babrie@cpan.org> >>. All rights reserved.
 
 This module is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself. See L<perlartistic>.
