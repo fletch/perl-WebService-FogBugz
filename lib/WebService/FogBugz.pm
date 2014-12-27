@@ -2,7 +2,7 @@ package WebService::FogBugz;
 
 use warnings;
 use strict;
-use 5.008_001;
+
 use LWP::UserAgent;
 use XML::Liberal;
 use XML::LibXML;
@@ -102,29 +102,55 @@ WebService::FogBugz - FogBugz API for Perl
 
 =head1 DESCRIPTION
 
-This module provides you Perl interface for FogBugz API.
-FogBugz is a project management system.
+This module provides a Perl interface for the FogBugz API. FogBugz is a 
+project management system.
 
 =head1 METHODS
 
 =head2 new([%options])
-this method returns an instance of this module.
-and this method allows following arguments;
-- email (almost your email address for log in to FogBugz)
-- password
-- base_url (your fogbugz api's URL.Probably http://www.example.com/fogbugz/api.asp. For example, if the URL is http://www.example.com/fogbugz, hit http://www.example.com/fogbugz/api.xml.And see the url field of response xml.)
+
+This method returns an instance of this module. 
+
+The arguments hash must provide the following parameters:
+
+=over
+
+=item * email
+
+Your login email address used for logging in to FogBugz.
+
+=item * password
+
+=item * base_url
+
+Your FogBugz API's URL. This may be a hosted instance 
+(e.g. https://example.fogbugz.com/api.asp?) or a local installation
+(e.g. http://www.example.com/fogbugz/api.asp).
+
+If you're unsure about your base_url, check the url field of an XML request.
+For example, if using a local installation, such as 
+http://www.example.com/fogbugz, check the URL as 
+http://www.example.com/fogbugz/api.xml. If you have a FogBugz On Demand account
+the link will be https://example.fogbugz.com/api.xml, where example is your 
+account name.
+
+=back
 
 =head2 logon
+
 Retrieves an API token from Fogbugz.
 
 =head2 logoff
+
 Log off from FogBugz.
 
-=head2 request_method
-the 1st argument is name of command.
-FogBugz 6.0 supports many commands. You will find from FogBugz Online Documantation by using keyword of 'cmd'.
+=head2 request_method($command,$hash)
 
-the 2nd argument is parameters of command of 1st argument.
+The 1st argument is name of command, the 2nd argument is the hash of parameters
+for the specified command.
+
+FogBugz supports many commands. You will find from FogBugz Online Documantation
+by using keyword of 'cmd'.
 
 =head1 BUGS
 
@@ -142,9 +168,13 @@ You can also look for information at:
 
 =over 4
 
-=item * FogBugz Online Documentation - API 
+=item * FogBugz Online Documentation
 
-L<http://www.fogcreek.com/FogBugz/docs/60/topics/advanced/API.html>
+L<http://help.fogcreek.com/fogbugz>
+
+=item * FogBugz Online Documentation - API
+
+L<http://help.fogcreek.com/8202/xml-api>
 
 =item * AnnoCPAN: Annotated CPAN documentation
 
@@ -164,10 +194,6 @@ L<http://search.cpan.org/dist/WebService-FogBugz>
 
 =back
 
-=head1 SEE ALSO
-
-L<http://www.fogcreek.com/FogBugz/docs/60/topics/advanced/API.html>
-
 =head1 AUTHORS
 
 Original Author: Takatsugu Shigeta  C<< <shigeta@cpan.org> >>
@@ -179,5 +205,5 @@ Current Maintainer: Barbie  C<< <barbie@cpan.org> >>
 Copyright (c) 2007-2014, Takatsugu Shigeta C<< <shigeta@cpan.org> >>. All rights reserved.
 Copyright (c) 2014-2015, Barbie C<< <babrie@cpan.org> >>. All rights reserved.
 
-This module is free software; you can redistribute it and/or
+This distribution is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself. See L<perlartistic>.
