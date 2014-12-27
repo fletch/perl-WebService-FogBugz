@@ -23,13 +23,14 @@ sub new {
 
 sub logon {
     my $self = shift;
-    my $res = $self->{ua}->get($self->{base_url}
-                               . '?cmd=logon'
-                               . '&email=' . $self->{email}
-                               . '&password=' . $self->{password});
-    if ($self->_is_error($res->content)) {
-        return;
-    }
+    my $res = $self->{ua}->get(
+        $self->{base_url}
+        . '?cmd=logon'
+        . '&email=' . $self->{email}
+        . '&password=' . $self->{password});
+
+    return  if ($self->_is_error($res->content));
+    
     my $doc = $self->{parser}->parse_string($res->content);
     $self->{token} = $doc->findvalue("//*[local-name()='response']/*[local-name()='token']/text()");
     return $self->{token};
@@ -37,12 +38,13 @@ sub logon {
 
 sub logoff {
     my $self = shift;
-    my $res = $self->{ua}->get($self->{base_url}
-                               . '?cmd=logoff'
-                               . '&token=' . $self->{token});
-    if ($self->_is_error($res->content)) {
-        return;
-    }
+    my $res = $self->{ua}->get(
+        $self->{base_url}
+        . '?cmd=logoff'
+        . '&token=' . $self->{token});
+
+    return  if ($self->_is_error($res->content));
+
     delete $self->{token};
     return;
 }
@@ -51,13 +53,14 @@ sub request_method {
     my $self = shift;
     my ($cmd, $param) = @_;
     my $query = join('', map {'&' . $_ . '=' . $param->{$_}} keys(%$param));
-    my $res = $self->{ua}->get($self->{base_url}
-                               . '?cmd=' . $cmd
-                               . '&token=' . $self->{token}
-                               . $query);
-    if ($self->_is_error($res->content)) {
-        return;
-    }
+    my $res = $self->{ua}->get(
+        $self->{base_url}
+        . '?cmd=' . $cmd
+        . '&token=' . $self->{token}
+        . $query);
+
+    return  if ($self->_is_error($res->content));
+
     return $res->content;
 }
 
@@ -66,10 +69,8 @@ sub _is_error {
     my ($content)  = @_;
     $content =~ s/<\?xml\s+.*?\?>//g;
     my $doc  = $self->{parser}->parse_string($content);
-    $self->{error}{code}
-        = $doc->findvalue("//*[local-name()='response']/*[local-name()='error']/\@code");
-    $self->{error}{msg}
-        = $doc->findvalue("//*[local-name()='response']/*[local-name()='error']/text()");
+    $self->{error}{code} = $doc->findvalue("//*[local-name()='response']/*[local-name()='error']/\@code");
+    $self->{error}{msg}  = $doc->findvalue("//*[local-name()='response']/*[local-name()='error']/text()");
     return $self->{error}{code} ? '1' : '0';
 }
 
