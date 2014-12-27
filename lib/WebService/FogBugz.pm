@@ -79,7 +79,7 @@ __END__
 
 =head1 NAME
 
-WebService::FogBugz - Perl interface to the FogBugz API
+WebService::FogBugz - FogBugz API for Perl
 
 =head1 SYNOPSIS
 
