@@ -4,6 +4,7 @@ use warnings;
 use strict;
 
 use LWP::UserAgent;
+use WebService::FogBugz::Config;
 use XML::Liberal;
 use XML::LibXML;
 
@@ -11,35 +12,64 @@ our $VERSION = '0.1.0';
 
 sub new {
     my $class = shift;
-    my ($param) = @_;
-    die 'you need to input email, password and base url.'
-        unless $param->{email} and $param->{password} and $param->{base_url};
-    my $self = bless {%$param}, $class;
-    $self->{ua} = $param->{ua} || LWP::UserAgent->new;
-    $self->{ua}->agent(__PACKAGE__.'/'.$VERSION);
-    $self->{parser} = XML::Liberal->new('LibXML');
+    my $param = { @_ };
+    my %atts;
+
+    my $self = bless %atts, $class;
+    $self->{UA} = $param->{ua} || LWP::UserAgent->new;
+    $self->{UA}->agent(__PACKAGE__.'/'.$VERSION);
+    $self->{PARSER} = XML::Liberal->new('LibXML');
+
+    die 'no configuration parameters'
+        unless $param;
+
+    $self->{CONFIG} = WebService::FogBugz::Config->new( %$param );
+    die 'no configuration parameters'
+        unless $self->{CONFIG};
+
+    die 'no instance of FogBugz specified '
+        unless $self->{CONFIG}->base_url;
+    die 'no login details of FogBugz instance specified '
+        unless ($self->{CONFIG}->token || ($self->{CONFIG}->email && $self->{CONFIG}->password));
+
+    $self->logon;
+    die 'unable to log into the specified instance of FogBugz'
+        unless $self->{token};
+
+    $self->{COMMAND} = WebService::FogBugz::Command->new(
+        base_url    => $self->{CONFIG}->base_url,
+        token       => $self->{token}
+    );
+
     return $self;
 }
 
 sub logon {
     my $self = shift;
-    my $res = $self->{ua}->get(
-        $self->{base_url}
-        . '?cmd=logon'
-        . '&email=' . $self->{email}
-        . '&password=' . $self->{password});
 
-    return  if ($self->_is_error($res->content));
+    if($self->{CONFIG}->token) {
+        $self->{token} = $self->{CONFIG}->token;
+
+    } else {
+        my $res = $self->{UA}->get(
+            $self->{CONFIG}->base_url
+            . '?cmd=logon'
+            . '&email=' . $self->{CONFIG}->email
+            . '&password=' . $self->{CONFIG}->password);
+
+        return  if ($self->_is_error($res->content));
     
-    my $doc = $self->{parser}->parse_string($res->content);
-    $self->{token} = $doc->findvalue("//*[local-name()='response']/*[local-name()='token']/text()");
+        my $doc = $self->{PARSER}->parse_string($res->content);
+        $self->{token} = $doc->findvalue("//*[local-name()='response']/*[local-name()='token']/text()");
+    }
+
     return $self->{token};
 }
 
 sub logoff {
     my $self = shift;
-    my $res = $self->{ua}->get(
-        $self->{base_url}
+    my $res = $self->{UA}->get(
+        $self->{CONFIG}->base_url
         . '?cmd=logoff'
         . '&token=' . $self->{token});
 
@@ -50,11 +80,10 @@ sub logoff {
 }
 
 sub request_method {
-    my $self = shift;
-    my ($cmd, $param) = @_;
+    my ($self, $cmd, $param) = @_;
     my $query = join('', map {'&' . $_ . '=' . $param->{$_}} keys(%$param));
-    my $res = $self->{ua}->get(
-        $self->{base_url}
+    my $res = $self->{UA}->get(
+        $self->{CONFIG}->base_url
         . '?cmd=' . $cmd
         . '&token=' . $self->{token}
         . $query);
@@ -65,8 +94,7 @@ sub request_method {
 }
 
 sub _is_error {
-    my $self = shift;
-    my ($content)  = @_;
+    my ($self, $content)  = @_;
     $content =~ s/<\?xml\s+.*?\?>//g;
     my $doc  = $self->{parser}->parse_string($content);
     $self->{error}{code} = $doc->findvalue("//*[local-name()='response']/*[local-name()='error']/\@code");
@@ -87,9 +115,18 @@ WebService::FogBugz - FogBugz API for Perl
     use WebService::FogBugz;
 
     my $fogbugz = WebService::FogBugz->new({
-        email    => 'yourmail@example.com',
-        password => 'yourpassword',
-        base_url => 'http://yourfogbugz.example.com/api.asp',
+        # optional
+        config      => 'fbrc',
+
+        # mandatory, if no config option
+        base_url    => 'http://yourfogbugz.example.com/api.asp',
+
+        # preprepared credentials
+        token       => 'mytoken',
+
+        # alternative credentials
+        email       => 'yourmail@example.com',
+        password    => 'yourpassword',
     });
 
     $fogbugz->logon;
@@ -106,15 +143,36 @@ WebService::FogBugz - FogBugz API for Perl
 This module provides a Perl interface for the FogBugz API. FogBugz is a 
 project management system.
 
-=head1 METHODS
+=head1 CONSTRUCTOR
 
 =head2 new([%options])
 
 This method returns an instance of this module. 
 
-The arguments hash must provide the following parameters:
+In order to process commands for the FogBugz API, certain configuration details
+are required. However, there are a few ways these can be presented. 
+Configuration values can be provided as options to the constructor, or via a
+configuration file.
+
+The constructor options can be one or more of the following:
 
 =over
+
+=item * config
+
+The file path to a configuration file. See below for further details regarding 
+the configuration file.
+
+Note: If no configuration file is found, all credentials must be provided as 
+constructor options.
+
+=item * base_url
+
+Your FogBugz API's URL. See below for more details regarding the base URL.
+
+=item * token
+
+Your personal token for accessing FogBugz.
 
 =item * email
 
@@ -122,9 +180,38 @@ Your login email address used for logging in to FogBugz.
 
 =item * password
 
-=item * base_url
+Your login password used for logging in to FogBugz.
 
-Your FogBugz API's URL. This may be a hosted instance 
+=back
+
+=head1 CONFIGURATION
+
+=head2 Configuration File
+
+If no file is given as a configuration option, the environment variable 'FBRC'
+is checked. If still no file is defined, the file '.fbrc' is looked for in the
+local directory followed by your home directory.
+
+If a file is found, and readable, it is read and its contents are extracted
+into configuration variables. The file may look like the one of the following
+examples.
+
+Example 1:
+
+  URL=https://example.com/fogbugz/api.asp
+  TOKEN=mytoken
+
+Example 2:
+
+  URL=https://example.fogbugz.com/api.asp
+  EMAIL=me@example.com
+  PASSWORD=mypassword
+
+Note that constructor options can be used to override these values if required.
+
+=head2 Base URL
+
+This may be a hosted instance 
 (e.g. https://example.fogbugz.com/api.asp?) or a local installation
 (e.g. http://www.example.com/fogbugz/api.asp).
 
@@ -135,7 +222,11 @@ http://www.example.com/fogbugz/api.xml. If you have a FogBugz On Demand account
 the link will be https://example.fogbugz.com/api.xml, where example is your 
 account name.
 
-=back
+=head1 ACCESS METHODS
+
+The following are used as convenience methods, as they are not necessarily 
+required, but are used by the older version of this distribution, and are 
+maintained for backwards compatibility.
 
 =head2 logon
 
@@ -145,13 +236,15 @@ Retrieves an API token from Fogbugz.
 
 Log off from FogBugz.
 
+=head1 COMMAND METHODS
+
 =head2 request_method($command,$hash)
 
-The 1st argument is name of command, the 2nd argument is the hash of parameters
-for the specified command.
+The 1st argument is the name of command you wish to action, and the 2nd 
+argument is the hash of parameters for the specified command.
 
-FogBugz supports many commands. You will find from FogBugz Online Documantation
-by using keyword of 'cmd'.
+FogBugz supports many commands, which you can find from FogBugz Online 
+Documentation by using keyword of 'cmd'.
 
 =head1 BUGS
 
