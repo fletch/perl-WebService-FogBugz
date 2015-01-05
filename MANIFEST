@@ -1,6 +1,7 @@
 Changes
 example/requests.pl
 lib/WebService/FogBugz.pm
+lib/WebService/FogBugz/Config.pm
 LICENSE
 Makefile.PL
 MANIFEST
