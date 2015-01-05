@@ -2,6 +2,7 @@ Revision history for WebService-FogBugz
 =======================================
 
         - added Config module.
+        - merge original module test scripts into one.
 
 0.1.0   2014-12-29
         - New Maintainer: Barbie.

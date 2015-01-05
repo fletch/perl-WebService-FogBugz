@@ -10,10 +10,7 @@ META.json
 META.yml
 README
 t/00.load.t
-t/01.new.t
-t/02.login.t
-t/03.logoff.t
-t/04.response.t
+t/01.basic.t
 t/90.pod.t
 t/91.pod-coverage.t
 t/92.perlcritic.t

@@ -13,7 +13,7 @@ unless ($email and $password and $base_url) {
     exit;
 }
 
-plan tests => 3;
+plan tests => 7;
 
 my $fogbugz;
 eval {
@@ -28,3 +28,28 @@ $fogbugz = WebService::FogBugz->new({
 });
 is ref($fogbugz), 'WebService::FogBugz', 'reference';
 is $fogbugz->{ua}->agent, 'WebService::FogBugz/' . $WebService::FogBugz::VERSION, 'check agent';
+
+my $token = $fogbugz->logon;
+ok $token, "your token is $token";
+
+my $res =  $fogbugz->request_method('new', {
+    sTitle      => 'WebService::FogBugz Create Case Test',
+    sEvent      => 'This is just a test',
+    sProject    => 'WebService::FogBugz',
+    sArea       => 'make test',
+    sTags       => 'WebService,Test',
+    ixPriority  => 4,
+});
+chomp $res;
+ok $res, "got response.";
+diag($res);
+
+$res =  $fogbugz->request_method('search', {
+    q => 'WebService',
+});
+chomp $res;
+ok $res, "got response.";
+diag($res);
+
+$fogbugz->logoff;
+ok !$fogbugz->{token}, "token is null";
