@@ -3,19 +3,25 @@ package WebService::FogBugz;
 use warnings;
 use strict;
 
+our $VERSION = '0.1.0';
+
+#----------------------------------------------------------------------------
+# Library Modules
+
 use LWP::UserAgent;
 use WebService::FogBugz::Config;
 use XML::Liberal;
 use XML::LibXML;
 
-our $VERSION = '0.1.0';
+#----------------------------------------------------------------------------
+# Public API
 
 sub new {
     my $class = shift;
     my $param = { @_ };
-    my %atts;
+    my $atts = {};
 
-    my $self = bless %atts, $class;
+    my $self = bless $atts, $class;
     $self->{UA} = $param->{ua} || LWP::UserAgent->new;
     $self->{UA}->agent(__PACKAGE__.'/'.$VERSION);
     $self->{PARSER} = XML::Liberal->new('LibXML');
@@ -36,10 +42,10 @@ sub new {
     die 'unable to log into the specified instance of FogBugz'
         unless $self->{token};
 
-    $self->{COMMAND} = WebService::FogBugz::Command->new(
-        base_url    => $self->{CONFIG}->base_url,
-        token       => $self->{token}
-    );
+#    $self->{COMMAND} = WebService::FogBugz::Command->new(
+#        base_url    => $self->{CONFIG}->base_url,
+#        token       => $self->{token}
+#    );
 
     return $self;
 }
@@ -96,7 +102,9 @@ sub request_method {
 sub _is_error {
     my ($self, $content)  = @_;
     $content =~ s/<\?xml\s+.*?\?>//g;
-    my $doc  = $self->{parser}->parse_string($content);
+    return 1    unless($content && $content =~ /</);
+
+    my $doc  = $self->{PARSER}->parse_string($content);
     $self->{error}{code} = $doc->findvalue("//*[local-name()='response']/*[local-name()='error']/\@code");
     $self->{error}{msg}  = $doc->findvalue("//*[local-name()='response']/*[local-name()='error']/text()");
     return $self->{error}{code} ? '1' : '0';
