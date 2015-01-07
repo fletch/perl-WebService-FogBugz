@@ -11,6 +11,7 @@ META.yml
 README
 t/00.load.t
 t/01.basic.t
+t/02.config.t
 t/90.pod.t
 t/91.pod-coverage.t
 t/92.perlcritic.t
