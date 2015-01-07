@@ -25,7 +25,7 @@ my %NAMES = (
 #----------------------------------------------------------------------------
 # Accessors
 
-__PACKAGE__->mk_accessors($_) for qw(base_url token email password);
+__PACKAGE__->mk_accessors($_) for qw(base_url token email password file);
 
 #----------------------------------------------------------------------------
 # Public API
@@ -33,14 +33,15 @@ __PACKAGE__->mk_accessors($_) for qw(base_url token email password);
 sub new {
     my $class = shift;
     my ($params) = {@_};
-    my %atts;
+    my $atts = {};
 
-    my $self = bless %atts, $class;
+    my $self = bless $atts, $class;
 
     my $fbrc = $params->{config};
     $fbrc ||= $ENV{FBRC};
     $fbrc = '.fbrc'             unless($fbrc && -f $fbrc);
     $fbrc = "$ENV{HOME}/.fbrc"  unless($fbrc && -f $fbrc);
+    $fbrc = ''                  unless($fbrc && -f $fbrc);
 
     $self->readConfig($fbrc)    if($fbrc);
 
@@ -53,6 +54,7 @@ sub new {
     $self->token(   $config{token})    if($config{token});
     $self->email(   $config{email})    if($config{email});
     $self->password($config{password}) if($config{password});
+    $self->file(    $fbrc)             if($fbrc);
 
     return $self;
 }
@@ -69,8 +71,9 @@ sub readConfig {
         $line =~ s!\s+$!!;
         next    unless($line && $line !~ /^#/);
         $line =~ s/^\s*//;
-        $line =~ /^(URL|TOKEN|EMAIL|PASSWORD)\s*=\s*(.*)/;
-        $self->{ $NAMES{$1} } = $2;
+        if($line =~ /^(URL|TOKEN|EMAIL|PASSWORD)\s*=\s*(.*)/) {
+            $self->{ $NAMES{$1} } = $2;
+        }
     }
 
     $fh->close;
