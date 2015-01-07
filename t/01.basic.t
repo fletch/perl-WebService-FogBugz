@@ -21,13 +21,13 @@ eval {
 };
 ok $@, 'logon error';
 
-$fogbugz = WebService::FogBugz->new({
+$fogbugz = WebService::FogBugz->new(
     email    => $email,
     password => $password,
     base_url => $base_url,
-});
+);
 is ref($fogbugz), 'WebService::FogBugz', 'reference';
-is $fogbugz->{ua}->agent, 'WebService::FogBugz/' . $WebService::FogBugz::VERSION, 'check agent';
+is $fogbugz->{UA}->agent, 'WebService::FogBugz/' . $WebService::FogBugz::VERSION, 'check agent';
 
 my $token = $fogbugz->logon;
 ok $token, "your token is $token";
