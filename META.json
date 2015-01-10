@@ -58,6 +58,10 @@
         "WebService::FogBugz": {
             "file": "lib/WebService/FogBugz.pm",
             "version": "0.1.0"
+        },
+        "WebService::FogBugz::Config": {
+            "file": "lib/WebService/FogBugz/Config.pm",
+            "version": "0.1.0"
         }
     },
     "no_index": {
