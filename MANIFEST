@@ -18,3 +18,5 @@ t/92.perlcritic.t
 t/94.metatest.t
 t/95.changedate.t
 t/96.metatest.t
+t/data/config01.txt
+t/data/config02.txt
