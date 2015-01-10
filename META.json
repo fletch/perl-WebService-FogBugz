@@ -1,6 +1,6 @@
 {
     "name" : "WebService-FogBugz",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "abstract" : "FogBugz API for Perl",
     "author": [
         "Barbie (BARBIE) <barbie@cpan.org>",
@@ -57,11 +57,11 @@
     "provides": {
         "WebService::FogBugz": {
             "file": "lib/WebService/FogBugz.pm",
-            "version": "0.1.0"
+            "version": "0.1.1"
         },
         "WebService::FogBugz::Config": {
             "file": "lib/WebService/FogBugz/Config.pm",
-            "version": "0.1.0"
+            "version": "0.1.1"
         }
     },
     "no_index": {
