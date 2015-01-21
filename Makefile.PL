@@ -17,6 +17,7 @@ WriteMakefile(
         # prereqs
         'Class::Accessor::Fast' => '0',
         'IO::File'              => '0',
+        'LWP::UserAgent'        => '0',
         'XML::Liberal'          => '0.16',
         'XML::LibXML'           => '1.60',
 
