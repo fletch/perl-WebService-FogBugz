@@ -1,6 +1,7 @@
 Revision history for WebService-FogBugz
 =======================================
 
+0.1.2   2015-01-23
         - fix executable Build Tool and text files.
         - added missing prerequisite.
 

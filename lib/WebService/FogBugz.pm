@@ -3,7 +3,7 @@ package WebService::FogBugz;
 use warnings;
 use strict;
 
-our $VERSION = '0.1.1';
+our $VERSION = '0.1.2';
 
 #----------------------------------------------------------------------------
 # Library Modules
