@@ -9,6 +9,8 @@ our $VERSION = '0.1.2';
 # Library Modules
 
 use LWP::UserAgent;
+use HTTP::Request::Common qw( POST );
+
 use WebService::FogBugz::Config;
 use XML::Liberal;
 use XML::LibXML;
@@ -53,20 +55,26 @@ sub new {
 sub logon {
     my $self = shift;
 
-    if($self->{CONFIG}->token) {
+    if ( $self->{CONFIG}->token ) {
         $self->{token} = $self->{CONFIG}->token;
 
-    } else {
-        my $res = $self->{UA}->get(
-            $self->{CONFIG}->base_url
-            . '?cmd=logon'
-            . '&email=' . $self->{CONFIG}->email
-            . '&password=' . $self->{CONFIG}->password);
+    }
+    else {
+        my $req = POST(
+            $self->{CONFIG}->base_url,
+            [   cmd      => q{logon},
+                email    => $self->{CONFIG}->email,
+                password => $self->{CONFIG}->password
+            ]
+        );
 
-        return  if ($self->_is_error($res->content));
-    
-        my $doc = $self->{PARSER}->parse_string($res->content);
-        $self->{token} = $doc->findvalue("//*[local-name()='response']/*[local-name()='token']/text()");
+        my $res = $self->{UA}->request($req);
+
+        return if ( $self->_is_error( $res->content ) );
+
+        my $doc = $self->{PARSER}->parse_string( $res->content );
+        $self->{token} = $doc->findvalue(
+            "//*[local-name()='response']/*[local-name()='token']/text()");
     }
 
     return $self->{token};
@@ -74,27 +82,36 @@ sub logon {
 
 sub logoff {
     my $self = shift;
-    my $res = $self->{UA}->get(
-        $self->{CONFIG}->base_url
-        . '?cmd=logoff'
-        . '&token=' . $self->{token});
 
-    return  if ($self->_is_error($res->content));
+    my $req = POST(
+        $self->{CONFIG}->base_url,
+        [   cmd   => q{logoff},
+            token => $self->{token}
+        ]
+    );
+
+    my $res = $self->{UA}->request($req);
+
+    return if ( $self->_is_error( $res->content ) );
 
     delete $self->{token};
     return;
 }
 
 sub request_method {
-    my ($self, $cmd, $param) = @_;
-    my $query = join('', map {'&' . $_ . '=' . $param->{$_}} keys(%$param));
-    my $res = $self->{UA}->get(
-        $self->{CONFIG}->base_url
-        . '?cmd=' . $cmd
-        . '&token=' . $self->{token}
-        . $query);
+    my ( $self, $cmd, $param ) = @_;
 
-    return  if ($self->_is_error($res->content));
+    my $req = POST(
+        $self->{CONFIG}->base_url,
+        [   cmd   => $cmd,
+            token => $self->{token},
+            %{$param}
+        ]
+    );
+
+    my $res = $self->{UA}->request($req);
+
+    return if ( $self->_is_error( $res->content ) );
 
     return $res->content;
 }
